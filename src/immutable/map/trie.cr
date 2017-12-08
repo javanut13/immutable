@@ -33,35 +33,35 @@ module Immutable
       end
 
       def get(key : K) : V
-        lookup(key.hash) { |hash| hash[key] }
+        lookup(key.hash.to_i) { |hash| hash[key] }
       end
 
       def fetch(key : K, &block : K -> _)
-        lookup(key.hash) { |hash| hash.fetch(key, &block) }
+        lookup(key.hash.to_i) { |hash| hash.fetch(key, &block) }
       end
 
       def has_key?(key : K) : Bool
-        lookup(key.hash) { |hash| hash.has_key?(key) }
+        lookup(key.hash.to_i) { |hash| hash.has_key?(key) }
       end
 
       def find_entry(key : K) : Entry(K, V)?
-        lookup(key.hash) { |hash| hash.find_entry(key) }
+        lookup(key.hash.to_i) { |hash| hash.find_entry(key) }
       end
 
       def set(key : K, value : V) : Trie(K, V)
-        set_at_index(key.hash, key, value)
+        set_at_index(key.hash.to_i, key, value)
       end
 
       def set!(key : K, value : V, from : UInt64) : Trie(K, V)
-        set_at_index!(key.hash, key, value, from)
+        set_at_index!(key.hash.to_i, key, value, from)
       end
 
       def delete(key : K) : Trie(K, V)
-        delete_at_index(key.hash, key)
+        delete_at_index(key.hash.to_i, key)
       end
 
       def delete!(key : K, from : UInt64) : Trie(K, V)
-        delete_at_index!(key.hash, key, from)
+        delete_at_index!(key.hash.to_i, key, from)
       end
 
       def each
