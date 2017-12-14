@@ -7,7 +7,7 @@
 #
 # ```
 # Immutable::Map(Symbol, Int32).new          # => Map {}
-# Immutable::Map.new({:foo => 1, :bar => 2}) # => Map {:foo => 1, :bar => 2}
+# Immutable::self.class.new({:foo => 1, :bar => 2}) # => Map {:foo => 1, :bar => 2}
 # Immutable::Map[{:foo => 1, :bar => 2 }]    # => Map {:foo => 1, :bar => 2}
 # ```
 #
@@ -31,7 +31,7 @@ module Immutable
     # Creates a map with the given key-values
     #
     # ```
-    # m = Immutable::Map.new({:a => 1, :b => true}) # Map {:a => 1, :b => true}
+    # m = Immutable::self.class.new({:a => 1, :b => true}) # Map {:a => 1, :b => true}
     # ```
     def initialize(hash : Hash(K, V) = {} of K => V)
       @trie = hash.reduce(Trie(K, V).empty(object_id)) do |trie, (k, v)|
@@ -63,7 +63,7 @@ module Immutable
     # Creates a map with the given key-values.
     #
     # ```
-    # m = Immutable::Map.new([{:a, 123}, {:b, 321}]) # Map {:a => 123, :b => 321}
+    # m = Immutable::self.class.new([{:a, 123}, {:b, 321}]) # Map {:a => 123, :b => 321}
     # ```
     def self.new(e : Enumerable({_, _}))
       Transient.new(e).persist!
@@ -147,7 +147,7 @@ module Immutable
     # m                     # => Map {:foo => 123}
     # ```
     def set(key : K, value : V)
-      Map.new(@trie.set(key, value), @block)
+      self.class.new(@trie.set(key, value), @block)
     end
 
 
@@ -160,7 +160,7 @@ module Immutable
     # m                   # => Map {:foo => 123, bar: 321}
     # ```
     def delete(key : K)
-      Map.new(@trie.delete(key), @block)
+      self.class.new(@trie.delete(key), @block)
     end
 
     # Returns a new map with the keys and values of this map and the given hash
@@ -177,7 +177,7 @@ module Immutable
       trie = hash.reduce(@trie) do |trie, (key, value)|
         trie.set(key, value)
       end
-      Map.new(trie, @block)
+      self.class.new(trie, @block)
     end
 
     # Returns a new map with the keys and values of this map and the given map
@@ -194,7 +194,7 @@ module Immutable
       trie = map.reduce(@trie) do |trie, (key, value)|
         trie.set(key, value)
       end
-      Map.new(trie, @block)
+      self.class.new(trie, @block)
     end
 
     def merge(hash : Hash(L, W)) forall L, W

@@ -8,7 +8,7 @@
 #
 # ```
 # Immutable::Vector(Int32).new          # => Vector []
-# Immutable::Vector.new([1, 42, 5, 46]) # => Vector [1, 42, 5, 46]
+# Immutable::self.class.new([1, 42, 5, 46]) # => Vector [1, 42, 5, 46]
 # Immutable::Vector[1, 2, 3]            # => Vector [1, 2, 3]
 # ```
 #
@@ -168,9 +168,9 @@ module Immutable
     def push(elem : T)
       new_tail = @tail + [elem]
       if new_tail.size == Trie::BLOCK_SIZE
-        Vector.new(@trie.push_leaf(new_tail), [] of T)
+        self.class.new(@trie.push_leaf(new_tail), [] of T)
       else
-        Vector.new(@trie, new_tail)
+        self.class.new(@trie, new_tail)
       end
     end
 
@@ -284,9 +284,9 @@ module Immutable
       raise IndexError.new if i < 0 || i >= size
       if in_tail?(i)
         new_tail = @tail.dup.tap { |t| t[i - @trie.size] = value }
-        return Vector.new(@trie, new_tail)
+        return self.class.new(@trie, new_tail)
       end
-      Vector.new(@trie.update(i, value), @tail)
+      self.class.new(@trie.update(i, value), @tail)
     end
 
     # Returns the first element in the vector, if not empty, else raises
@@ -403,7 +403,7 @@ module Immutable
         trie = trie.push_leaf!(leaf_tail.first(Trie::BLOCK_SIZE), object_id)
         tail = leaf_tail.skip(Trie::BLOCK_SIZE)
       end
-      Vector.new(trie.clear_owner!, tail)
+      self.class.new(trie.clear_owner!, tail)
     end
 
     # Difference. Returns a new vector that is a copy of the original, removing
@@ -518,8 +518,8 @@ module Immutable
 
     private def drop_last
       return yield if empty?
-      return Vector.new(@trie.pop_leaf, @trie.last_leaf) if @tail.size == 1 && size > 1
-      Vector.new(@trie, @tail[0...-1])
+      return self.class.new(@trie.pop_leaf, @trie.last_leaf) if @tail.size == 1 && size > 1
+      self.class.new(@trie, @tail[0...-1])
     end
 
     protected def to_lookup_set
